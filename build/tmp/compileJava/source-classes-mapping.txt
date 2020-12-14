@@ -1,2 +1,0 @@
-com/zikstock/core/ZikstockCoreApplication.java
- com.zikstock.core.ZikstockCoreApplication
