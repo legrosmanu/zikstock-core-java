@@ -1,0 +1,2 @@
+com/zikstock/core/ZikstockCoreApplicationTests.java
+ com.zikstock.core.ZikstockCoreApplicationTests
