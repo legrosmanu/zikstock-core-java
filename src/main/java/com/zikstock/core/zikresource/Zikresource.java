@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,10 +19,10 @@ public class Zikresource {
     @Id
     private String id;
 
-    @NotNull
+    @NotBlank(message = "url is mandatory")
     private String url;
 
-    @NotNull @Size(max=255)
+    @NotBlank(message = "title is mandatory") @Size(max=255)
     private String title;
 
     @Size(max=255)
