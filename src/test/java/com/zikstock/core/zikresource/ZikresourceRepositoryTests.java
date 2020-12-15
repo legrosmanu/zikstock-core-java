@@ -14,6 +14,9 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Test de Zikresource DAO, even if we have specific rules only on the creation.
+ */
 @DataMongoTest
 public class ZikresourceRepositoryTests {
 
@@ -22,11 +25,6 @@ public class ZikresourceRepositoryTests {
 
     private static Validator validator;
 
-    private Zikresource createZikresourceInDataBase() {
-        Zikresource zikresource = new Zikresource();
-        return this.mongoTemplate.save(zikresource);
-    }
-
     private Zikresource getCorrectZikresource() {
         Zikresource zikresource = new Zikresource();
         zikresource.setUrl("https://www.songsterr.com/a/wsa/tool-sober-tab-s19923t2");
@@ -34,6 +32,11 @@ public class ZikresourceRepositoryTests {
         zikresource.setArtist("Tool");
         zikresource.addTag("difficult", "intermediate");
         return zikresource;
+    }
+
+    private Zikresource createZikresourceInDataBase() {
+        Zikresource zikresource = getCorrectZikresource();
+        return this.mongoTemplate.save(zikresource);
     }
 
     @BeforeAll
@@ -59,7 +62,7 @@ public class ZikresourceRepositoryTests {
     }
 
     @Test
-    public void shouldNotCreateTheZikresourceBecauseUrlAndTitleAreMissing() throws Exception {
+    public void shouldProduceViolationBecauseUrlAndTitleAreMissing() {
         // Given a Zikresource without URL and title fields
         Zikresource zikResourceWithoutUrl = new Zikresource();
         zikResourceWithoutUrl.setArtist("Tool");
@@ -70,7 +73,7 @@ public class ZikresourceRepositoryTests {
     }
 
     @Test
-    public void shouldNotCreateTheZikresourceBecauseTooMuchTags() {
+    public void shouldProduceViolationBecauseTooMuchTags() {
         // Given a Zikresource with more than 10 tags
         Zikresource zikResourceWithTooMuchTags = new Zikresource();
         zikResourceWithTooMuchTags.setUrl("fake");
@@ -85,7 +88,7 @@ public class ZikresourceRepositoryTests {
     }
 
     @Test
-    public void shouldOneRetrieveZikresource() {
+    public void shouldRetrieveOneZikresource() {
         // Given the id of a resource in the DB
         String id = createZikresourceInDataBase().getId();
         // When
@@ -102,6 +105,29 @@ public class ZikresourceRepositoryTests {
         Optional<Zikresource> zikresourceRetrieved = this.mongoTemplate.findById(id);
         // Then
         assertThat(zikresourceRetrieved).isEmpty();
+    }
+
+    @Test
+    public void shouldDeleteTheZikresourceIfExists() {
+        // Given a ZikResource on database
+        String id = createZikresourceInDataBase().getId();
+        // When
+        this.mongoTemplate.deleteById(id);
+        // Then
+        Optional<Zikresource> zikresourceRetrieved = this.mongoTemplate.findById(id);
+        assertThat(zikresourceRetrieved).isEmpty();
+    }
+
+    @Test
+    public void shouldHaveNoImpactIfWeTryToDeleteAnUnknownZikresource() {
+        // Given an unknown zikresource, like a bad id
+        String id = "aaa";
+        long nbZikResourcesBefore = this.mongoTemplate.count();
+        // When
+        this.mongoTemplate.deleteById(id);
+        // Then
+        long nbZikResourcesAfter = this.mongoTemplate.count();
+        assertThat(nbZikResourcesBefore == nbZikResourcesAfter).isTrue();
     }
 
 }
