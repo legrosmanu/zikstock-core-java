@@ -1,11 +1,16 @@
 package com.zikstock.core.zikresource;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,6 +19,8 @@ public class ZikresourceRepositoryTests {
 
     @Autowired
     private ZikresourceRepository mongoTemplate;
+
+    private static Validator validator;
 
     private Zikresource createZikresourceInDataBase() {
         Zikresource zikresource = new Zikresource();
@@ -27,6 +34,11 @@ public class ZikresourceRepositoryTests {
         zikresource.setArtist("Tool");
         zikresource.addTag("difficult", "intermediate");
         return zikresource;
+    }
+
+    @BeforeAll
+    public static void setupValidatorInstance() {
+        validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     @AfterEach
@@ -46,20 +58,31 @@ public class ZikresourceRepositoryTests {
         assertThat(zikresourceSaved.getTitle()).isEqualTo(zikresource.getTitle());
     }
 
-    /** TODO
     @Test
-    public void shouldNotCreateTheZikresourceAndThrowAnExceptionBecauseUrlMissing() {
+    public void shouldNotCreateTheZikresourceBecauseUrlAndTitleAreMissing() throws Exception {
+        // Given a Zikresource without URL and title fields
+        Zikresource zikResourceWithoutUrl = new Zikresource();
+        zikResourceWithoutUrl.setArtist("Tool");
+        // When
+        Set<ConstraintViolation<Zikresource>> violations = validator.validate(zikResourceWithoutUrl);
+        // Then
+        assertThat(violations.size()).isEqualTo(2);
     }
 
     @Test
-    public void shouldNotCreateTheZikresourceAndThrowAnExceptionBecauseTitleMissing() {
-
+    public void shouldNotCreateTheZikresourceBecauseTooMuchTags() {
+        // Given a Zikresource with more than 10 tags
+        Zikresource zikResourceWithTooMuchTags = new Zikresource();
+        zikResourceWithTooMuchTags.setUrl("fake");
+        zikResourceWithTooMuchTags.setTitle("fake");
+        for (int i = 0 ; i < 12 ; i++) {
+            zikResourceWithTooMuchTags.addTag("label" + i, "value" + i);
+        }
+        // When
+        Set<ConstraintViolation<Zikresource>> violations = validator.validate(zikResourceWithTooMuchTags);
+        // Then
+        assertThat(violations.size()).isEqualTo(1);
     }
-
-    @Test
-    public void shouldNotCreateTheZikresourceAndThrowAnExceptionBecauseTooMuchTags() {
-
-    }*/
 
     @Test
     public void shouldOneRetrieveZikresource() {
