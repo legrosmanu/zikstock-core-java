@@ -1,5 +1,6 @@
 package com.zikstock.core.zikresource;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -14,24 +15,68 @@ public class ZikresourceRepositoryTests {
     @Autowired
     private ZikresourceRepository mongoTemplate;
 
-    @Test
-    public void shouldRetrieveZikresource() throws Exception {
-        // Given the id of a resource in the DB
+    private Zikresource createZikresourceInDataBase() {
         Zikresource zikresource = new Zikresource();
-        Zikresource zikresourceSaved = mongoTemplate.save(zikresource);
-        String id = zikresourceSaved.getId();
+        return this.mongoTemplate.save(zikresource);
+    }
+
+    private Zikresource getCorrectZikresource() {
+        Zikresource zikresource = new Zikresource();
+        zikresource.setUrl("https://www.songsterr.com/a/wsa/tool-sober-tab-s19923t2");
+        zikresource.setTitle("Sober");
+        zikresource.setArtist("Tool");
+        zikresource.addTag("difficult", "intermediate");
+        return zikresource;
+    }
+
+    @AfterEach
+    private void cleanDataBase() {
+        this.mongoTemplate.deleteAll();
+    }
+
+    @Test
+    public void shouldCreateZikresource() {
+        // Given a correct Zikresource
+        Zikresource zikresource = this.getCorrectZikresource();
         // When
-        Optional<Zikresource> zikresourceRetrieved = mongoTemplate.findById(id);
+        Zikresource zikresourceSaved = this.mongoTemplate.save(zikresource);
+        // Then
+        assertThat(zikresourceSaved).isNotNull();
+        assertThat(zikresourceSaved.getUrl()).isEqualTo(zikresource.getUrl());
+        assertThat(zikresourceSaved.getTitle()).isEqualTo(zikresource.getTitle());
+    }
+
+    /** TODO
+    @Test
+    public void shouldNotCreateTheZikresourceAndThrowAnExceptionBecauseUrlMissing() {
+    }
+
+    @Test
+    public void shouldNotCreateTheZikresourceAndThrowAnExceptionBecauseTitleMissing() {
+
+    }
+
+    @Test
+    public void shouldNotCreateTheZikresourceAndThrowAnExceptionBecauseTooMuchTags() {
+
+    }*/
+
+    @Test
+    public void shouldOneRetrieveZikresource() {
+        // Given the id of a resource in the DB
+        String id = createZikresourceInDataBase().getId();
+        // When
+        Optional<Zikresource> zikresourceRetrieved = this.mongoTemplate.findById(id);
         // Then
         assertThat(zikresourceRetrieved).isNotEmpty();
     }
 
     @Test
-    public void shouldNotRetrieveZikresourceUnknown() throws Exception {
+    public void shouldNotRetrieveZikresourceUnknown() {
         // Given an unknown zikresource, like a bad id
         String id = "aaa";
         // When
-        Optional<Zikresource> zikresourceRetrieved = mongoTemplate.findById(id);
+        Optional<Zikresource> zikresourceRetrieved = this.mongoTemplate.findById(id);
         // Then
         assertThat(zikresourceRetrieved).isEmpty();
     }

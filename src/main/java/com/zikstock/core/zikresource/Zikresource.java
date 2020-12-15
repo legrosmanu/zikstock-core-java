@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,13 +34,17 @@ public class Zikresource {
     // TODO : after authentication implementation, add the field addedBy
 
     @Size(max=10) @Getter(AccessLevel.NONE) @Setter(AccessLevel.NONE)
-    private List<Tag> tags;
+    private List<Tag> tags = new ArrayList<>();
 
     @CreatedDate
     private Date createdAt;
 
     @LastModifiedDate
     private Date updatedAt;
+
+    public void addTag(String label, String value) {
+        tags.add(new Tag(label, value));
+    }
 
     @Data
     @RequiredArgsConstructor
