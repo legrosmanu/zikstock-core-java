@@ -1,9 +1,7 @@
 package com.zikstock.core.zikresource;
 
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
@@ -12,7 +10,6 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -37,11 +34,5 @@ public class Zikresource {
 
     @Size(max=10)
     private List<ZikresourceTag> tags = new ArrayList<>();
-
-    @CreatedDate
-    private Date createdAt;
-
-    @LastModifiedDate
-    private Date updatedAt;
 
 }
