@@ -8,12 +8,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Data
 @Document(collection="zikresources")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Zikresource {
 
     @Id
