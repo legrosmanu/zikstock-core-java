@@ -9,6 +9,9 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,7 +33,9 @@ public class ZikresourceRepositoryTests {
         zikresource.setUrl("https://www.songsterr.com/a/wsa/tool-sober-tab-s19923t2");
         zikresource.setTitle("Sober");
         zikresource.setArtist("Tool");
-        zikresource.addTag("difficult", "intermediate");
+        List<ZikresourceTag> tags = new ArrayList<>();
+        tags.add(new ZikresourceTag("difficult", "intermediate"));
+        zikresource.setTags(tags);
         return zikresource;
     }
 
@@ -78,9 +83,11 @@ public class ZikresourceRepositoryTests {
         Zikresource zikResourceWithTooMuchTags = new Zikresource();
         zikResourceWithTooMuchTags.setUrl("fake");
         zikResourceWithTooMuchTags.setTitle("fake");
+        List<ZikresourceTag> tags = new ArrayList<>();
         for (int i = 0 ; i < 12 ; i++) {
-            zikResourceWithTooMuchTags.addTag("label" + i, "value" + i);
+            tags.add(new ZikresourceTag("label" + i, "value" + i));
         }
+        zikResourceWithTooMuchTags.setTags(tags);
         // When
         Set<ConstraintViolation<Zikresource>> violations = validator.validate(zikResourceWithTooMuchTags);
         // Then

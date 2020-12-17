@@ -1,19 +1,20 @@
 package com.zikstock.core.zikresource;
 
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Data
 @Document(collection="zikresources")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Zikresource {
 
     @Id
@@ -31,29 +32,7 @@ public class Zikresource {
     @Size(max=255)
     private String artist;
 
-    // TODO : after authentication implementation, add the field addedBy
-
-    @Size(max=10) @Getter(AccessLevel.NONE) @Setter(AccessLevel.NONE)
-    private List<Tag> tags = new ArrayList<>();
-
-    @CreatedDate
-    private Date createdAt;
-
-    @LastModifiedDate
-    private Date updatedAt;
-
-    public void addTag(String label, String value) {
-        tags.add(new Tag(label, value));
-    }
-
-    @Data
-    @RequiredArgsConstructor
-    private class Tag {
-        @NonNull
-        private String label;
-        @NonNull @Size(max=255)
-        private String value;
-
-    }
+    @Size(max=10)
+    private List<ZikresourceTag> tags = new ArrayList<>();
 
 }
