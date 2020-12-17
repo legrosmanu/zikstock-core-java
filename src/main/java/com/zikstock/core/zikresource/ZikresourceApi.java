@@ -28,7 +28,7 @@ public class ZikresourceApi {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String errorMessage = error.getDefaultMessage();
-            errors.put("code", "400-1"); // Check if error.getObjectName() == zikresource when needed?
+            errors.put("code", "400-1");
             errors.put("details", errorMessage);
         });
         return errors;

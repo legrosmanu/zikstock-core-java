@@ -1,6 +1,7 @@
 # Compiled class file
 *.class
 build/*
+bin/*
 
 # Log file
 *.log
@@ -15,6 +16,9 @@ build/*
 .idea
 .gradle
 **/.DS_Store
+.classpath
+.project
+.settings
 
 # Package Files #
 *.jar
