@@ -31,29 +31,13 @@ public class Zikresource {
     @Size(max=255)
     private String artist;
 
-    // TODO : after authentication implementation, add the field addedBy
-
-    @Size(max=10) @Getter(AccessLevel.NONE) @Setter(AccessLevel.NONE)
-    private List<Tag> tags = new ArrayList<>();
+    @Size(max=10)
+    private List<ZikresourceTag> tags = new ArrayList<>();
 
     @CreatedDate
     private Date createdAt;
 
     @LastModifiedDate
     private Date updatedAt;
-
-    public void addTag(String label, String value) {
-        tags.add(new Tag(label, value));
-    }
-
-    @Data
-    @RequiredArgsConstructor
-    private class Tag {
-        @NonNull
-        private String label;
-        @NonNull @Size(max=255)
-        private String value;
-
-    }
 
 }

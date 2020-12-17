@@ -6,8 +6,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
+
+import com.zikstock.core.ZikstockCoreError;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -16,22 +19,47 @@ public class ZikresourceApi {
     @Autowired
     private ZikresourceRepository zikresourceRepository;
 
-    @PostMapping("/zikresources")
-    public Zikresource createZikresource(@Valid @RequestBody Zikresource zikresource) {
-        return this.zikresourceRepository.save(zikresource);
-    }
 
+    /*****
+     * Exceptions handlers
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String errorMessage = error.getDefaultMessage();
-            errors.put("code", "400-1");
-            errors.put("details", errorMessage);
-        });
-        return errors;
+    public ZikstockCoreError handleValidationExceptions(MethodArgumentNotValidException ex) {
+        ZikstockCoreError error = new ZikstockCoreError("400-1", ex.getMessage());
+        return error;
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(ZikresourceNotFoundException.class)
+    public ZikstockCoreError handleZikResourceNotFound(ZikresourceNotFoundException ex) {
+        return ex.getError();
+    }
+
+    /*****
+     * Endpoints
+     */
+    @PostMapping("/zikresources")
+    public Zikresource createZikresource(@Valid @RequestBody Zikresource zikresource) {
+        return zikresourceRepository.save(zikresource);
+    }
+
+    @PutMapping("/zikresources/{id}")
+    public Zikresource updateZikResource(@PathVariable String id, @Valid @RequestBody Zikresource zikresource){
+        Zikresource zikresourceUpdated = null;
+        Optional<Zikresource> opt = zikresourceRepository.findById(id);
+        zikresourceUpdated = opt.orElseThrow(() -> new ZikresourceNotFoundException(id));
+        return zikresourceUpdated;
+    }
+
+    @GetMapping("/zikresources/{id}")
+    public Zikresource getZikResource(@PathVariable String id) {
+        return zikresourceRepository.findById(id).orElseThrow(() -> new ZikresourceNotFoundException(id));
+    }
+
+    @GetMapping("/zikresources")
+    public List<Zikresource> getZikresources() {
+        return zikresourceRepository.findAll();
     }
 
 }
