@@ -62,4 +62,9 @@ public class ZikresourceApi {
         return zikresourceRepository.findAll();
     }
 
+    @DeleteMapping("/zikresources/{id}")
+    public void deleteZikResource(@PathVariable String id) {
+        zikresourceRepository.deleteById(id);
+    }
+
 }
